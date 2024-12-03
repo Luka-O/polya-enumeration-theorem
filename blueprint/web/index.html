@@ -12,7 +12,7 @@
 <meta name="generator" content="plasTeX" />
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pólya enumeration theorem</title>
+<title>Pólya’s enumeration theorem</title>
 <link rel="stylesheet" href="styles/theme-white.css" />
 <link rel="stylesheet" href="styles/amsthm.css" />
 <link rel="stylesheet" href="styles/showmore.css" />
@@ -30,13 +30,583 @@
 
 <div class="main-text">
 <div class="titlepage">
-<h1>Pólya enumeration theorem</h1>
+<h1>Pólya’s enumeration theorem</h1>
 <p class="authors">
 <span class="author">Luka Opravš</span>
 </p>
 </div>
-<h1 id="a0000000002">Pólya enumeration theorem</h1>
-<p> A Lean 4 formalization of Pólya enumeration theorem.  </p>
+<div class="abstract"> The goal of this project is to formalize the <a href ="https://en.wikipedia.org/wiki/P%C3%B3lya_enumeration_theorem"><span class="ttfamily">Pólya’s enumeration theorem</span></a> and some of its applications in Lean 4 using Mathlib. </div>
+<h1 id="a0000000002">1 The number of distinct colorings</h1>
+<p>Given a set of objects \(X\) and a set of colors \(Y\), we interpret functions in \(Y^X = \{ f : X \to Y\} \) as <em>colorings</em> of \(X\) with colors in \(Y\). In a coloring \(f\), an object \(x \in X\) is colored with \(f(x)\). </p>
+<p>Let \(G\) be a group. A (left) <em>group action</em> of \(G\) on a set \(X\) is a function \({-} \cdot {-} : G \times X \to X\) that satisfies: </p>
+<div class="displaymath" id="a0000000003">
+  \begin{align*}  1 \cdot x & = x \quad \forall x \in X,\\ g \cdot (h \cdot x) & = (gh) \cdot x \quad \forall g, h \in G, \forall x \in X. \end{align*}
+</div>
+<p>For any group action, we define the following: </p>
+<ul class="itemize">
+  <li><p><b class="bfseries">Orbits:</b> A group action induces an equivalence relation on \(X\) defined by \(x \sim y \iff \exists g \in G : g \cdot x = y\). The quotient set \(X / G\) is the set of equivalence classes under this relation. The equivalence class of an element \(x \in X\) is called the <em>orbit of \(x\)</em> and is denoted as \(Gx = \{ g \cdot x : g \in G\} \). </p>
+</li>
+  <li><p><b class="bfseries">Fixed points:</b> The set of <em>fixed points</em> of \(g \in G\) is \(X^g = \{ x \in X : g \cdot x = x\} \). </p>
+</li>
+</ul>
+<p>Given a group \(G\) acting on a set \(X\), we interpret the elements of \(G\) as transformations that permute the elements of \(X\) into an equivalent configuration. If we color the elements of \(X\) using a function \(f : X \to Y\) and then permute \(X\) with an element \(g \in G\), we obtain an equivalent configuration with a new coloring defined by \(x \mapsto f(g^{-1} \cdot x)\). The inverse \(g^{-1}\) appears in the definition of the new coloring because the color of the element \(x\) in the new permuted configuration must match the color of its preimage \(g^{-1} \cdot x\) in the original configuration. Thus, for any \(g \in G\), we consider the colorings \(f\) and \(x \mapsto f(g^{-1} \cdot x)\) to be equivalent. </p>
+<p>Any action of \(G\) on \(X\) induces an action of \(G\) on the set of functions \(X \to Y\), mapping colorings to equivalent colorings. We will denote both group actions using \({-} \cdot {-}\), because we can always determine which action is intended from the type of the second argument. </p>
+<div class="proposition_thmwrapper theorem-style-plain" id="prop:mul-action-colorings">
+  <div class="proposition_thmheading">
+    <span class="proposition_thmcaption">
+    Proposition
+    </span>
+    <span class="proposition_thmlabel">1</span>
+    <div class="thm_header_extras">
+
+    
+    ✓
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#prop:mul-action-colorings">#</a>
+    
+    <a class="icon proof" href="index.html#a0000000004"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+</a>
+    
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://Luka-O.github.io/polya-enumeration-theorem/docs/find/#doc/DistinctColorings.MulActionColorings" class="lean_decl">DistinctColorings.MulActionColorings</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="proposition_thmcontent">
+  <p>  Given a group action of \(G\) on \(X\), we can define an induced group action of \(G\) on \(Y^X\) by: </p>
+<div class="displaymath" id="a0000000005">
+  \begin{equation*}  g \cdot f = \big(x \mapsto f(g^{-1} \cdot x)\big). \end{equation*}
+</div>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000004">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▶</span>
+  </div>
+  <div class="proof_content">
+  
+<div class="displaymath" id="a0000000006">
+  \begin{gather*}  (1 \cdot f)(x) = f(1^{-1} \cdot x) = f(1 \cdot x) = f(x), \\ (g \cdot (h \cdot f))(x) = f(h^{-1} \cdot (g^{-1} \cdot x)) = f((h^{-1}g^{-1}) \cdot x) = f((gh)^{-1} \cdot x) = ((gh) \cdot f)(x). \end{gather*}
+</div>
+
+  </div>
+</div>
+<p>The orbits of this group action correspond to sets of equivalent colorings. When \(X\) and \(Y\) are finite, the set of orbits \(Y^X/G\) is also finite. The number of distinct colorings is exactly the number of orbits. From this point onward, we will assume that both \(X\) and \(Y\) are finite. </p>
+<div class="definition_thmwrapper theorem-style-definition" id="def:distinct-colorings">
+  <div class="definition_thmheading">
+    <span class="definition_thmcaption">
+    Definition
+    </span>
+    <span class="definition_thmlabel">2</span>
+    <div class="thm_header_extras">
+
+    
+    ✓
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#def:distinct-colorings">#</a>
+    
+    
+    <button class="modal"><svg  class="icon icon-mindmap "><use xlink:href="symbol-defs.svg#icon-mindmap"></use></svg>
+</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Uses</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="index.html#prop:mul-action-colorings">Proposition 1</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://Luka-O.github.io/polya-enumeration-theorem/docs/find/#doc/DistinctColorings.numDistinctColorings" class="lean_decl">DistinctColorings.numDistinctColorings</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="definition_thmcontent">
+  <p>   The <em>number of distinct colorings</em> is defined as \(|Y^X/G|\). </p>
+
+  </div>
+</div>
+<h1 id="a0000000007">2 Cycles of elements in a group</h1>
+<p>A group action of \(G\) on \(X\) associates each element \(g \in G\) with a permutation in \(S_X = \{ f : X \to X \mid f \text{ is bijective}\} \). Specifically, each \(g \in G\) is mapped to a permutation \(\pi _g\) defined by \(\pi _g(x) = g \cdot x\). The mapping \(\phi : G \to S_X\), given by \(\phi (g) = \pi _g\), is a group homomorphism. </p>
+<p>Using this correspondence, we define the <em>cycles of \(g\)</em> as the cycles of the permutation \(\pi _g\). The number of cycles of \(g\) is denoted by \(c(g)\). </p>
+<p>In Mathlib, the function \(\phi \) is implemented as <em>MulAction.toPerm</em>. Cycles and the decomposition of permutations into disjoint cycles are included as well. However, in our case, they are tedious to work with because cycles of length 1 are not recognized as proper cycles and are excluded from the factorizations. For this reason, we define our own version of cycles that also includes cycles of length 1. </p>
+<div class="definition_thmwrapper theorem-style-definition" id="def:cycles-of-group">
+  <div class="definition_thmheading">
+    <span class="definition_thmcaption">
+    Definition
+    </span>
+    <span class="definition_thmlabel">3</span>
+    <div class="thm_header_extras">
+
+    
+    ✓
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#def:cycles-of-group">#</a>
+    
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://Luka-O.github.io/polya-enumeration-theorem/docs/find/#doc/CyclesOfGroupElements.CyclesOfGroup" class="lean_decl">CyclesOfGroupElements.CyclesOfGroup</a></li>
+          
+          <li><a href="https://Luka-O.github.io/polya-enumeration-theorem/docs/find/#doc/CyclesOfGroupElements.numCyclesOfGroup" class="lean_decl">CyclesOfGroupElements.numCyclesOfGroup</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="definition_thmcontent">
+  <p>  Given \(g \in G\), the set of <em>cycles of \(g\)</em> is defined as \(X / \sim _g\), where \(\sim _g\) is the equivalence relation of being in the same cycle of \(g\): </p>
+<div class="displaymath" id="a0000000008">
+  \begin{equation*}  x_1 \sim _g x_2 \iff \exists k \in \mathbb {Z}: \pi _g^k(x_1) = x_2. \end{equation*}
+</div>
+<p> The <em>number of cycles of \(g\)</em> is: \(c(g) = |X / \sim _g|\). </p>
+
+  </div>
+</div>
+<p>Colorings of the cycles of \(g \in G\) are then defined as functions in \(Y^{X / \sim _g}\). </p>
+<h1 id="a0000000009">3 Proof of Pólya’s enumeration theorem</h1>
+<p>Mathlib already includes an important result known as <em>Burnside’s lemma</em>, which states that for any finite group \(G\) acting on a set \(X\), the number of orbits is equal to the average number of fixed points: </p>
+<div class="displaymath" id="a0000000010">
+  \begin{equation*}  |X/G| = \frac{1}{|G|} \sum _{g \in G} |X^g|. \end{equation*}
+</div>
+<p> This result is available as <em>MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group</em> in Mathlib. </p>
+<p>First, we prove that for any \(g \in G\), a coloring \(f\) is a fixed point of \(g\) if and only if \(f\) maps all elements in the same cycle of \(g\) to the same color. </p>
+<div class="proposition_thmwrapper theorem-style-plain" id="prop:f-mem-fixedBy-iff-forall-eq-to-eq">
+  <div class="proposition_thmheading">
+    <span class="proposition_thmcaption">
+    Proposition
+    </span>
+    <span class="proposition_thmlabel">4</span>
+    <div class="thm_header_extras">
+
+    
+    ✓
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#prop:f-mem-fixedBy-iff-forall-eq-to-eq">#</a>
+    
+    <a class="icon proof" href="index.html#a0000000011"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+</a>
+    
+    
+    <button class="modal"><svg  class="icon icon-mindmap "><use xlink:href="symbol-defs.svg#icon-mindmap"></use></svg>
+</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Uses</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="index.html#prop:mul-action-colorings">Proposition 1</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://Luka-O.github.io/polya-enumeration-theorem/docs/find/#doc/Theorem.f_mem_fixedBy_iff_forall_eq_to_eq" class="lean_decl">Theorem.f_mem_fixedBy_iff_forall_eq_to_eq</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="proposition_thmcontent">
+  <p>   For any \(g \in G\): </p>
+<div class="displaymath" id="a0000000012">
+  \begin{equation*}  f \in (Y^X)^g \iff \forall x_1, x_2 \in X: (x_1 \sim _g x_2 \implies f(x_1) = f(x_2)). \end{equation*}
+</div>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000011">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▶</span>
+  </div>
+  <div class="proof_content">
+  
+<div class="displaymath" id="a0000000013">
+  \begin{align}  f \in (Y^X)^g & \iff g \cdot f = f, \\ & \iff \forall x \in X: (g \cdot f)(x) = f(x), \\ & \iff \forall x \in X: f(g^{-1} \cdot x) = f(x), \\ & \iff \forall x \in X, \forall k \in \mathbb {Z}: f(g^k \cdot x) = f(x), \\ & \iff (\forall x_1, x_2 \in X: (x_1 \sim _g x_2 \implies f(x_1) = f(x_2))). \end{align}
+</div>
+<p> The \((3) \implies (4)\) implication is proven inductively.<br />If \(k = 0\) then \(f(1 \cdot x) = f(x)\) by first property of group action.<br />If \(k \geq 1\) then we use (3) on \(g^{k} \cdot x\) to get \(f(g^{k - 1} \cdot x) = f(g^k \cdot x)\) and then use the induction hypothesis \(f(g^{k - 1} \cdot x) = f(x)\) to conclude \(f(g^k \cdot x) = f(x)\).<br />If \(k \leq -1\) then we use (3) on \(g^{k + 1} \cdot x\) to get \(f(g^k \cdot x) = f(g^{k + 1} \cdot x)\) and then use the induction hypothesis \(f(g^{k + 1} \cdot x) = f(x)\) to conclude \(f(g^k \cdot x) = f(x)\).<br /><br />To prove that \((4) \iff (5)\) we use the fact that \(x_1 \sim _g x_2 \iff \exists k \in \mathbb {Z}: g^k \cdot x_1 = x_2\).<br />The \((4) \implies (5)\) implication follows by using \((4)\) with \(x = x_1\) and \(k\) from \(\exists k \in \mathbb {Z}: g^k \cdot x_1 = x_2\).<br />The \((5) \implies (4)\) implication follows by using \((5)\) with \(x_1 = g^k \cdot x\) and \(x_2 = x\). </p>
+
+  </div>
+</div>
+<p>We will only use the left-to-right implication of this result. However, the right-to-left direction is also proven, as it requires only a small amount of additional work and it nicely encapsulates the idea that the set of colorings fixed by \(g\) is the same as the set of colorings that map all elements in the same cycle of \(g\) to the same color. </p>
+<p>Since we can interpret elements of \(Y^{X/\sim _g}\) as functions that map all elements in the same cycle of \(g\) to the same color, we can conclude that \(|(Y^X)^g| = |Y^{X/\sim _g}|\). However, in Lean, \((Y^X)^g\) is a set of functions that map from \(X\), while \(Y^{X/\sim _g}\) is a type of functions that map from \(X/\sim _g\). Therefore, we cannot formally talk about equality of sets. To formalize our argument, we construct a bijection between \((Y^X)^g\) and \(Y^{X/\sim _g}\). </p>
+<div class="proposition_thmwrapper theorem-style-plain" id="prop:equiv_of_fixedBy_coloring_of_cycle_coloring">
+  <div class="proposition_thmheading">
+    <span class="proposition_thmcaption">
+    Proposition
+    </span>
+    <span class="proposition_thmlabel">5</span>
+    <div class="thm_header_extras">
+
+    
+    ✓
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#prop:equiv_of_fixedBy_coloring_of_cycle_coloring">#</a>
+    
+    <a class="icon proof" href="index.html#a0000000014"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+</a>
+    
+    
+    <button class="modal"><svg  class="icon icon-mindmap "><use xlink:href="symbol-defs.svg#icon-mindmap"></use></svg>
+</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Uses</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="index.html#prop:f-mem-fixedBy-iff-forall-eq-to-eq">Proposition 4</a></li>
+          
+          <li><a href="index.html#def:cycles-of-group">Definition 3</a></li>
+          
+          <li><a href="index.html#prop:mul-action-colorings">Proposition 1</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://Luka-O.github.io/polya-enumeration-theorem/docs/find/#doc/Theorem.cycle_coloring_of_fixedBy_coloring" class="lean_decl">Theorem.cycle_coloring_of_fixedBy_coloring</a></li>
+          
+          <li><a href="https://Luka-O.github.io/polya-enumeration-theorem/docs/find/#doc/Theorem.fixedBy_coloring_of_cycle_coloring" class="lean_decl">Theorem.fixedBy_coloring_of_cycle_coloring</a></li>
+          
+          <li><a href="https://Luka-O.github.io/polya-enumeration-theorem/docs/find/#doc/Theorem.equiv_of_fixedBy_coloring_of_cycle_coloring" class="lean_decl">Theorem.equiv_of_fixedBy_coloring_of_cycle_coloring</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="proposition_thmcontent">
+  <p>   Let \([x]\) denote the equivalence class of \(x\) in \(X/\sim _g\).<br />Let \(\varphi : (Y^X)^g \to Y^{X/\sim _g}\) be defined by \(\varphi (f) = [x] \mapsto f(x)\), where \(x\) is some element of \([x]\).<br />Let \(\varphi ^{-1} : Y^{X/\sim _g} \to (Y^X)^g\) be defined by \(\varphi ^{-1}(f) = x \mapsto f([x])\).<br />Then \(\varphi \) and \(\varphi ^{-1}\) are well-defined and inverses of each other. Therefore we have a bijection between \((Y^X)^g\) and \(Y^{X/\sim _g}\). </p>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000014">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▶</span>
+  </div>
+  <div class="proof_content">
+  <p>\(\varphi \) is well-defined because by Proposition&#160;<a href="index.html#prop:f-mem-fixedBy-iff-forall-eq-to-eq">4</a> \(f \in (Y^X)^g\) and \(x_1 \sim _g x_2\) imply \(f(x_1) = f(x_2)\).<br />\(\varphi ^{-1}\) is well-defined because it maps to \((Y^X)^g\): </p>
+<div class="displaymath" id="a0000000015">
+  \begin{equation*}  \forall f \in Y^{X/\sim _g}, \forall x \in X: (g \cdot \varphi ^{-1}(f))(x) = f([g^{-1} \cdot x]) = f([x]) = (\varphi ^{-1}(f))(x). \end{equation*}
+</div>
+<p> \(\varphi ^{-1}(\varphi (f))(x) = f(x')\), where \(x'\) is some representative of \([x]\). Therefore we have \(x \sim _g x'\) and since \(f \in (Y^X)^g\) by Proposition&#160;<a href="index.html#prop:f-mem-fixedBy-iff-forall-eq-to-eq">4</a>: \(f(x) = f(x')\).<br />\(\varphi (\varphi ^{-1}(f))([x]) = f([x'])\) where \(x'\) is some representative of \([x]\). Therefore \([x] = [x']\) and then \(f([x]) = f([x'])\). </p>
+
+  </div>
+</div>
+<div class="proposition_thmwrapper theorem-style-plain" id="prop:forall-card-pow-numCyclesOfGroup-eq-card-fixedBy">
+  <div class="proposition_thmheading">
+    <span class="proposition_thmcaption">
+    Proposition
+    </span>
+    <span class="proposition_thmlabel">6</span>
+    <div class="thm_header_extras">
+
+    
+    ✓
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#prop:forall-card-pow-numCyclesOfGroup-eq-card-fixedBy">#</a>
+    
+    <a class="icon proof" href="index.html#a0000000016"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+</a>
+    
+    
+    <button class="modal"><svg  class="icon icon-mindmap "><use xlink:href="symbol-defs.svg#icon-mindmap"></use></svg>
+</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Uses</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="index.html#prop:equiv_of_fixedBy_coloring_of_cycle_coloring">Proposition 5</a></li>
+          
+          <li><a href="index.html#def:cycles-of-group">Definition 3</a></li>
+          
+          <li><a href="index.html#prop:mul-action-colorings">Proposition 1</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://Luka-O.github.io/polya-enumeration-theorem/docs/find/#doc/Theorem.forall_card_pow_numCyclesOfGroup_eq_card_fixedBy" class="lean_decl">Theorem.forall_card_pow_numCyclesOfGroup_eq_card_fixedBy</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="proposition_thmcontent">
+  
+<div class="displaymath" id="a0000000017">
+  \begin{equation*}  \forall g \in G: |(Y^X)^g| = |Y|^{c(g)} \end{equation*}
+</div>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000016">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▶</span>
+  </div>
+  <div class="proof_content">
+  <p>The equality \(|(Y^X)^g| = |Y^{X/\sim _g}|\) follows from the bijection in Proposition&#160;<a href="index.html#prop:equiv_of_fixedBy_coloring_of_cycle_coloring">5</a>. The number of functions in \(Y^{X/\sim _g}\) is \(|Y|^{|X/\sim _g|}\). By definition, \(c(g) = |X/\sim _g|\), which completes the proof. </p>
+
+  </div>
+</div>
+<p>We use <em>Burnside’s Lemma</em> to prove the <em>Pólya’s enumeration theorem</em>. </p>
+<div class="proposition_thmwrapper theorem-style-plain" id="prop:numDistinctColorings-eq-sum-card-pow-numCyclesOfGroup-div-mul-card-group">
+  <div class="proposition_thmheading">
+    <span class="proposition_thmcaption">
+    Proposition
+    </span>
+    <span class="proposition_thmlabel">7</span>
+    <div class="thm_header_extras">
+
+    
+    ✓
+        </div>
+    <div class="thm_header_hidden_extras">
+
+    <a class="icon proof" href="index.html#prop:numDistinctColorings-eq-sum-card-pow-numCyclesOfGroup-div-mul-card-group">#</a>
+    
+    <a class="icon proof" href="index.html#a0000000018"><svg  class="icon icon-cogs "><use xlink:href="symbol-defs.svg#icon-cogs"></use></svg>
+</a>
+    
+    
+    <button class="modal"><svg  class="icon icon-mindmap "><use xlink:href="symbol-defs.svg#icon-mindmap"></use></svg>
+</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Uses</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="index.html#prop:forall-card-pow-numCyclesOfGroup-eq-card-fixedBy">Proposition 6</a></li>
+          
+          <li><a href="index.html#def:cycles-of-group">Definition 3</a></li>
+          
+          <li><a href="index.html#def:distinct-colorings">Definition 2</a></li>
+          
+          <li><a href="index.html#prop:mul-action-colorings">Proposition 1</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+    
+    <button class="modal lean">L∃∀N</button>
+        <div class="modal-container">
+      <div class="modal-content">
+        <header>
+          <h1>Lean declarations</h1>
+          <button class="closebtn"><svg  class="icon icon-cross "><use xlink:href="symbol-defs.svg#icon-cross"></use></svg>
+</button>
+        </header>
+        
+        <ul class="uses">
+          
+          <li><a href="https://Luka-O.github.io/polya-enumeration-theorem/docs/find/#doc/Theorem.numDistinctColorings_eq_sum_card_pow_numCyclesOfGroup_div_mul_card_group" class="lean_decl">Theorem.numDistinctColorings_eq_sum_card_pow_numCyclesOfGroup_div_mul_card_group</a></li>
+          
+        </ul>
+    
+      </div>
+    </div>
+
+    
+        </div>
+  </div>
+  <div class="proposition_thmcontent">
+  <p>   The number of distinct colorings of \(X\) with colors in \(Y\) under the group action of \(G\) on \(X\) is: </p>
+<div class="displaymath" id="a0000000019">
+  \begin{equation*}  |Y^X/G| = \frac{1}{|G|} \sum _{g \in G} |Y|^{c(g)}. \end{equation*}
+</div>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000018">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▶</span>
+  </div>
+  <div class="proof_content">
+  <p>We use <em>Burnside’s lemma</em> on colorings to get: </p>
+<div class="displaymath" id="a0000000020">
+  \begin{equation*}  |Y^X/G| = \frac{1}{|G|} \sum _{g \in G} |(Y^X)^g|. \end{equation*}
+</div>
+<p> Using Proposition&#160;<a href="index.html#prop:forall-card-pow-numCyclesOfGroup-eq-card-fixedBy">6</a>, we substitute \(|(Y^X)^g|\) with \(|Y|^{c(g)}\). </p>
+
+  </div>
+</div>
+<h1 id="a0000000021">4 Applications</h1>
+<ul class="itemize">
+  <li><p>Trivial group </p>
+</li>
+  <li><p>\(S_n\) </p>
+</li>
+  <li><p>Necklaces </p>
+</li>
+  <li><p>Bracelets </p>
+</li>
+  <li><p>Cube </p>
+</li>
+</ul>
 
 </div> <!--main-text -->
 </div> <!-- content-wrapper -->

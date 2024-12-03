@@ -6,5 +6,212 @@
 % the current file can be a simple sequence of \input. Otherwise It
 % can start with a \section or \chapter for instance.
 
-\section*{Pólya enumeration theorem}
-A Lean 4 formalization of Pólya enumeration theorem.
+\begin{abstract}
+  The goal of this project is to formalize the \href{https://en.wikipedia.org/wiki/P%C3%B3lya_enumeration_theorem}{\texttt{Pólya's enumeration theorem}} and some of its applications in Lean 4 using Mathlib.
+\end{abstract}
+
+\section{The number of distinct colorings}
+
+Given a set of objects $X$ and a set of colors $Y$, we interpret functions in $Y^X = \{f : X \to Y\}$ as \emph{colorings} of $X$ with colors in $Y$. In a coloring $f$, an object $x \in X$ is colored with $f(x)$.
+
+Let $G$ be a group. A (left) \emph{group action} of $G$ on a set $X$ is a function ${-} \cdot {-} : G \times X \to X$ that satisfies:
+\begin{align*}
+  1 \cdot x &= x \quad \forall x \in X,\\
+  g \cdot (h \cdot x) &= (gh) \cdot x \quad \forall g, h \in G, \forall x \in X.
+\end{align*}
+
+For any group action, we define the following:
+\begin{itemize}
+  \item \textbf{Orbits:} A group action induces an equivalence relation on $X$ defined by $x \sim y \iff \exists g \in G : g \cdot x = y$. The quotient set $X / G$ is the set of equivalence classes under this relation. The equivalence class of an element $x \in X$ is called the \emph{orbit of $x$} and is denoted as $Gx = \{g \cdot x : g \in G\}$.
+  
+  \item \textbf{Fixed points:} The set of \emph{fixed points} of $g \in G$ is $X^g = \{x \in X : g \cdot x = x\}$.
+  
+  %\item \textbf{Stabilizer:} The \emph{stabilizer} of $x \in X$ is $G_x = \{g \in G : g \cdot x = x\}$.
+\end{itemize}
+
+Given a group $G$ acting on a set $X$, we interpret the elements of $G$ as transformations that permute the elements of $X$ into an equivalent configuration. If we color the elements of $X$ using a function $f : X \to Y$ and then permute $X$ with an element $g \in G$, we obtain an equivalent configuration with a new coloring defined by $x \mapsto f(g^{-1} \cdot x)$. The inverse $g^{-1}$ appears in the definition of the new coloring because the color of the element $x$ in the new permuted configuration must match the color of its preimage $g^{-1} \cdot x$ in the original configuration. Thus, for any $g \in G$, we consider the colorings $f$ and $x \mapsto f(g^{-1} \cdot x)$ to be equivalent.
+
+Any action of $G$ on $X$ induces an action of $G$ on the set of functions $X \to Y$, mapping colorings to equivalent colorings. We will denote both group actions using ${-} \cdot {-}$, because we can always determine which action is intended from the type of the second argument.
+\begin{proposition}
+  \label{prop:mul-action-colorings}
+  %
+  \leanok
+  \lean{DistinctColorings.MulActionColorings}
+  %
+  Given a group action of $G$ on $X$, we can define an induced group action of $G$ on $Y^X$ by:
+  \begin{equation*}
+    g \cdot f = \big(x \mapsto f(g^{-1} \cdot x)\big).
+  \end{equation*}
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  \begin{gather*}
+    (1 \cdot f)(x) = f(1^{-1} \cdot x) = f(1 \cdot x) = f(x), \\
+    (g \cdot (h \cdot f))(x) = f(h^{-1} \cdot (g^{-1} \cdot x)) = f((h^{-1}g^{-1}) \cdot x) = f((gh)^{-1} \cdot x) = ((gh) \cdot f)(x).
+  \end{gather*}
+\end{proof}
+
+The orbits of this group action correspond to sets of equivalent colorings. When $X$ and $Y$ are finite, the set of orbits $Y^X/G$ is also finite. The number of distinct colorings is exactly the number of orbits. From this point onward, we will assume that both $X$ and $Y$ are finite.
+
+\begin{definition}
+  \label{def:distinct-colorings}
+  %
+  \leanok
+  \lean{DistinctColorings.numDistinctColorings}
+  %
+  \uses{prop:mul-action-colorings}
+  %
+  The \emph{number of distinct colorings} is defined as $|Y^X/G|$.
+\end{definition}
+
+\section{Cycles of elements in a group}
+
+A group action of $G$ on $X$ associates each element $g \in G$ with a permutation in $S_X = \{f : X \to X \mid f \text{ is bijective}\}$. Specifically, each $g \in G$ is mapped to a permutation $\pi_g$ defined by $\pi_g(x) = g \cdot x$. The mapping $\phi : G \to S_X$, given by $\phi(g) = \pi_g$, is a group homomorphism. 
+
+Using this correspondence, we define the \emph{cycles of $g$} as the cycles of the permutation $\pi_g$. The number of cycles of $g$ is denoted by $c(g)$.
+
+In Mathlib, the function $\phi$ is implemented as \emph{MulAction.toPerm}. Cycles and the decomposition of permutations into disjoint cycles are included as well. However, in our case, they are tedious to work with because cycles of length 1 are not recognized as proper cycles and are excluded from the factorizations. For this reason, we define our own version of cycles that also includes cycles of length 1.
+
+\begin{definition}
+  \label{def:cycles-of-group}
+  %
+  \leanok
+  \lean{CyclesOfGroupElements.CyclesOfGroup, CyclesOfGroupElements.numCyclesOfGroup}
+  %
+  Given $g \in G$, the set of \emph{cycles of $g$} is defined as $X / \sim_g$, where $\sim_g$ is the equivalence relation of being in the same cycle of $g$:
+  \begin{equation*}
+    x_1 \sim_g x_2 \iff \exists k \in \mathbb{Z}: \pi_g^k(x_1) = x_2.
+  \end{equation*}
+  The \emph{number of cycles of $g$} is: $c(g) = |X / \sim_g|$.
+\end{definition}
+
+Colorings of the cycles of $g \in G$ are then defined as functions in $Y^{X / \sim_g}$.
+
+\section{Proof of Pólya's enumeration theorem}
+
+Mathlib already includes an important result known as \emph{Burnside's lemma}, which states that for any finite group $G$ acting on a set $X$, the number of orbits is equal to the average number of fixed points:
+\begin{equation*}
+  |X/G| = \frac{1}{|G|} \sum_{g \in G} |X^g|.
+\end{equation*}
+This result is available as \emph{MulAction.sum\_card\_fixedBy\_eq\_card\_orbits\_mul\_card\_group} in Mathlib.
+
+First, we prove that for any $g \in G$, a coloring $f$ is a fixed point of $g$ if and only if $f$ maps all elements in the same cycle of $g$ to the same color.
+\begin{proposition}
+  \label{prop:f-mem-fixedBy-iff-forall-eq-to-eq}
+  %
+  \leanok
+  \lean{Theorem.f_mem_fixedBy_iff_forall_eq_to_eq}
+  %
+  \uses{prop:mul-action-colorings}
+  %
+  For any $g \in G$:
+  \begin{equation*}
+    f \in (Y^X)^g \iff \forall x_1, x_2 \in X: (x_1 \sim_g x_2 \implies f(x_1) = f(x_2)).
+  \end{equation*}
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  \begin{align}
+    f \in (Y^X)^g &\iff g \cdot f = f, \\
+                  &\iff \forall x \in X: (g \cdot f)(x) = f(x), \\
+                  &\iff \forall x \in X: f(g^{-1} \cdot x) = f(x), \\
+                  &\iff \forall x \in X, \forall k \in \mathbb{Z}: f(g^k \cdot x) = f(x), \\
+                  &\iff (\forall x_1, x_2 \in X: (x_1 \sim_g x_2 \implies f(x_1) = f(x_2))).
+  \end{align}
+  The $(3) \implies (4)$ implication is proven inductively.\\
+  If $k = 0$ then $f(1 \cdot x) = f(x)$ by first property of group action.\\
+  If $k \geq 1$ then we use (3) on $g^{k} \cdot x$ to get $f(g^{k - 1} \cdot x) = f(g^k \cdot x)$ and then use the induction hypothesis $f(g^{k - 1} \cdot x) = f(x)$ to conclude $f(g^k \cdot x) = f(x)$.\\
+  If $k \leq -1$ then we use (3) on $g^{k + 1} \cdot x$ to get $f(g^k \cdot x) = f(g^{k + 1} \cdot x)$ and then use the induction hypothesis $f(g^{k + 1} \cdot x) = f(x)$  to conclude $f(g^k \cdot x) = f(x)$.\\
+  \\
+  To prove that $(4) \iff (5)$ we use the fact that $x_1 \sim_g x_2 \iff \exists k \in \mathbb{Z}: g^k \cdot x_1 = x_2$.\\
+  The $(4) \implies (5)$ implication follows by using $(4)$ with $x = x_1$ and $k$ from $\exists k \in \mathbb{Z}: g^k \cdot x_1 = x_2$.\\
+  The $(5) \implies (4)$ implication follows by using $(5)$ with $x_1 = g^k \cdot x$ and $x_2 = x$.
+\end{proof}
+
+We will only use the left-to-right implication of this result. However, the right-to-left direction is also proven, as it requires only a small amount of additional work and it nicely encapsulates the idea that the set of colorings fixed by $g$ is the same as the set of colorings that map all elements in the same cycle of $g$ to the same color.
+
+Since we can interpret elements of $Y^{X/\sim_g}$ as functions that map all elements in the same cycle of $g$ to the same color, we can conclude that $|(Y^X)^g| = |Y^{X/\sim_g}|$. However, in Lean, $(Y^X)^g$ is a set of functions that map from $X$, while $Y^{X/\sim_g}$ is a type of functions that map from $X/\sim_g$. Therefore, we cannot formally talk about equality of sets. To formalize our argument, we construct a bijection between $(Y^X)^g$ and $Y^{X/\sim_g}$.
+
+\begin{proposition}
+  \label{prop:equiv_of_fixedBy_coloring_of_cycle_coloring}
+  %
+  \leanok
+  \lean{Theorem.cycle_coloring_of_fixedBy_coloring, Theorem.fixedBy_coloring_of_cycle_coloring, Theorem.equiv_of_fixedBy_coloring_of_cycle_coloring}
+  %
+  \uses{prop:f-mem-fixedBy-iff-forall-eq-to-eq, def:cycles-of-group, prop:mul-action-colorings}
+  %
+  Let $[x]$ denote the equivalence class of $x$ in $X/\sim_g$.\\
+  Let $\varphi : (Y^X)^g \to Y^{X/\sim_g}$ be defined by $\varphi(f) = [x] \mapsto f(x)$, where $x$ is some element of $[x]$.\\
+  Let $\varphi^{-1} : Y^{X/\sim_g} \to (Y^X)^g$ be defined by $\varphi^{-1}(f) = x \mapsto f([x])$.\\
+  Then $\varphi$ and $\varphi^{-1}$ are well-defined and inverses of each other. Therefore we have a bijection between $(Y^X)^g$ and $Y^{X/\sim_g}$.
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  $\varphi$ is well-defined because by Proposition~\ref{prop:f-mem-fixedBy-iff-forall-eq-to-eq} $f \in (Y^X)^g$ and $x_1 \sim_g x_2$ imply $f(x_1) = f(x_2)$.\\
+  $\varphi^{-1}$ is well-defined because it maps to $(Y^X)^g$:
+  \begin{equation*}
+    \forall f \in Y^{X/\sim_g}, \forall x \in X: (g \cdot \varphi^{-1}(f))(x) = f([g^{-1} \cdot x]) = f([x]) = (\varphi^{-1}(f))(x).
+  \end{equation*}
+  $\varphi^{-1}(\varphi(f))(x) = f(x')$, where $x'$ is some representative of $[x]$. Therefore we have $x \sim_g x'$ and since $f \in (Y^X)^g$ by Proposition~\ref{prop:f-mem-fixedBy-iff-forall-eq-to-eq}: $f(x) = f(x')$.\\
+  $\varphi(\varphi^{-1}(f))([x]) = f([x'])$ where $x'$ is some representative of $[x]$. Therefore $[x] = [x']$ and then $f([x]) = f([x'])$.
+\end{proof}
+
+\begin{proposition}
+  \label{prop:forall-card-pow-numCyclesOfGroup-eq-card-fixedBy}
+  %
+  \leanok
+  \lean{Theorem.forall_card_pow_numCyclesOfGroup_eq_card_fixedBy}
+  %
+  \uses{prop:equiv_of_fixedBy_coloring_of_cycle_coloring, def:cycles-of-group, prop:mul-action-colorings}
+  %
+  \begin{equation*}
+    \forall g \in G: |(Y^X)^g| = |Y|^{c(g)}
+  \end{equation*}
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  The equality $|(Y^X)^g| = |Y^{X/\sim_g}|$ follows from the bijection in Proposition~\ref{prop:equiv_of_fixedBy_coloring_of_cycle_coloring}. The number of functions in $Y^{X/\sim_g}$ is $|Y|^{|X/\sim_g|}$. By definition, $c(g) = |X/\sim_g|$, which completes the proof.
+\end{proof}
+
+We use \emph{Burnside's Lemma} to prove the \emph{Pólya's enumeration theorem}.
+
+\begin{proposition}
+  \label{prop:numDistinctColorings-eq-sum-card-pow-numCyclesOfGroup-div-mul-card-group}
+  %
+  \leanok
+  \lean{Theorem.numDistinctColorings_eq_sum_card_pow_numCyclesOfGroup_div_mul_card_group}
+  %
+  \uses{prop:forall-card-pow-numCyclesOfGroup-eq-card-fixedBy, def:cycles-of-group, def:distinct-colorings, prop:mul-action-colorings}
+  %
+  The number of distinct colorings of $X$ with colors in $Y$ under the group action of $G$ on $X$ is:
+  \begin{equation*}
+    |Y^X/G| = \frac{1}{|G|} \sum_{g \in G} |Y|^{c(g)}.
+  \end{equation*}
+\end{proposition}
+
+\begin{proof}
+  \leanok
+  We use \emph{Burnside's lemma} on colorings to get:
+  \begin{equation*}
+    |Y^X/G| = \frac{1}{|G|} \sum_{g \in G} |(Y^X)^g|.
+  \end{equation*}
+  Using Proposition~\ref{prop:forall-card-pow-numCyclesOfGroup-eq-card-fixedBy}, we substitute $|(Y^X)^g|$ with $|Y|^{c(g)}$.
+\end{proof}
+
+\section{Applications}
+
+\begin{itemize}
+  \item Trivial group
+  
+  \item $S_n$
+  
+  \item Necklaces
+  
+  \item Bracelets
+  
+  \item Cube
+\end{itemize}
