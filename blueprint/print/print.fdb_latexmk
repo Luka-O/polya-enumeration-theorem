@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1733216893.18665 "print.tex" "C:/Users/Luka/Desktop/polya-enumeration-theorem/blueprint/print/print.pdf" "print" 1733216896.39281 0
+["pdflatex"] 1742683512.90093 "print.tex" "C:/Users/Luka/Desktop/polya-enumeration-theorem/blueprint/print/print.pdf" "print" 1742683516.32822 0
   "C:/Users/Luka/AppData/Local/MiKTeX/miktex/data/le/xetex/xelatex.fmt" 1659301511 23188864 d38a5030e6ca5bd5f32b799ef662d308 ""
   "C:/Users/Luka/AppData/Local/Programs/MiKTeX/fonts/tfm/adobe/zapfding/pzdr.tfm" 1136768654 1528 7e12f4c0fcf5a072cebdcfbfc610f54c ""
   "C:/Users/Luka/AppData/Local/Programs/MiKTeX/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1233951854 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -82,11 +82,11 @@
   "C:/Users/Luka/AppData/Local/Programs/MiKTeX/tex/latex/unicode-math/unicode-math-xetex.sty" 1691937353 131459 a23c98c9e5ecfc17568c7bc94fda1317 ""
   "C:/Users/Luka/AppData/Local/Programs/MiKTeX/tex/latex/unicode-math/unicode-math.sty" 1691937353 1474 b42cfbe849cb22ed1c0632800327884f ""
   "C:/Users/Luka/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
-  "C:/Users/Luka/Desktop/polya-enumeration-theorem/blueprint/print/print.aux" 1733216896 1677 973decdf0b09aebdd7f11a832ed28edc "pdflatex"
-  "C:/Users/Luka/Desktop/polya-enumeration-theorem/blueprint/print/print.out" 1733216896 759 e5da7aa5287599d4567d3407b31acedd "pdflatex"
-  "content.tex" 1733216851 11961 5e97c9746bdb09b6a3db0c6d5daf271d ""
-  "macros/common.tex" 1733215456 820 60fafcc3aa944a5e60030581a943ef6b ""
-  "macros/print.tex" 1733215456 1101 87627b2ec24fef68edc71c13f43f7bab ""
+  "C:/Users/Luka/Desktop/polya-enumeration-theorem/blueprint/print/print.aux" 1742683515 5489 e7b3279613b5744f55286b081f29ba6b "pdflatex"
+  "C:/Users/Luka/Desktop/polya-enumeration-theorem/blueprint/print/print.out" 1742683515 1892 9a2c71c9a165f947cbc086dcb82fcf4a "pdflatex"
+  "content.tex" 1742683494 54100 33182d192a8d1bd53ccfe33234941883 ""
+  "macros/common.tex" 1742679849 820 60fafcc3aa944a5e60030581a943ef6b ""
+  "macros/print.tex" 1742679849 1101 87627b2ec24fef68edc71c13f43f7bab ""
   "print.tex" 1733180644 1129 14965a2affbd2a9a2d3d09a2985c3388 ""
   (generated)
   "C:/Users/Luka/Desktop/polya-enumeration-theorem/blueprint/print/print.aux"

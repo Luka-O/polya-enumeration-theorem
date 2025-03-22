@@ -1,6 +1,6 @@
 # Pólya's enumeration theorem
 
-A [Lean 4](https://lean-lang.org) formalization of the [Pólya's enumeration theorem](https://en.wikipedia.org/wiki/P%C3%B3lya_enumeration_theorem).
+A [Lean 4](https://lean-lang.org) formalization of [Pólya's enumeration theorem](https://en.wikipedia.org/wiki/P%C3%B3lya_enumeration_theorem) and some of its applications, along with a fast algorithm for its use.
 
 ## Resources
 
