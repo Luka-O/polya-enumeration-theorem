@@ -7,7 +7,7 @@
 % can start with a \section or \chapter for instance.
 
 \begin{abstract}
-  The goal of this project is to formalize the \href{https://en.wikipedia.org/wiki/P%C3%B3lya_enumeration_theorem}{\texttt{Pólya's enumeration theorem}}, implement a fast algorithm for its usage, and formalize some of its applications in Lean 4 with Mathlib.
+  The goal of this project is to formalize the \href{https://en.wikipedia.org/wiki/P%C3%B3lya_enumeration_theorem}{\texttt{Pólya's enumeration theorem}}, implement a fast algorithm for its use, and formalize some of its applications in Lean 4 with Mathlib.
 \end{abstract}
 
 \section{The number of distinct colorings}
@@ -100,7 +100,7 @@ Mathlib already includes an important result known as \emph{Burnside's lemma}, w
 \begin{equation*}
   |X/G| = \frac{1}{|G|} \sum_{g \in G} |X^g|.
 \end{equation*}
-This result is available as \emph{MulAction.sum\_card\_fixedBy\_eq\_card\_orbits\_mul\_card\_group} in Mathlib. It is stated as:
+This is formalized in Mathlib as \emph{MulAction.sum\_card\_fixedBy\_eq\_card\_orbits\_mul\_card\_group}:
 \begin{equation*}
   |X/G| \cdot |G| = \sum_{g \in G} |X^g|.
 \end{equation*}
@@ -133,7 +133,7 @@ First, we prove that for any $g \in G$, a coloring $f$ is a fixed point of $g$ i
   The $(3) \implies (4)$ implication is proven inductively.\\
   If $k = 0$ then $f(1 \cdot x) = f(x)$ by the first property of group action.\\
   If $k \geq 1$ then we use (3) on $g^{k} \cdot x$ to get $f(g^{k - 1} \cdot x) = f(g^k \cdot x)$ and then use the induction hypothesis $f(g^{k - 1} \cdot x) = f(x)$ to conclude $f(g^k \cdot x) = f(x)$.\\
-  If $k \leq -1$ then we use (3) on $g^{k + 1} \cdot x$ to get $f(g^k \cdot x) = f(g^{k + 1} \cdot x)$ and then use the induction hypothesis $f(g^{k + 1} \cdot x) = f(x)$  to conclude $f(g^k \cdot x) = f(x)$.\\
+  If $k \leq -1$ then we use (3) on $g^{k + 1} \cdot x$ to get $f(g^k \cdot x) = f(g^{k + 1} \cdot x)$ and then use the induction hypothesis $f(g^{k + 1} \cdot x) = f(x)$ to conclude $f(g^k \cdot x) = f(x)$.\\
   \\
   To prove that $(4) \iff (5)$ we use the fact that $x_1 \sim_g x_2 \iff \exists k \in \mathbb{Z}: g^k \cdot x_1 = x_2$.\\
   The $(4) \implies (5)$ implication follows by using $(4)$ with $x = x_1$ and $k$ from $\exists k \in \mathbb{Z}: g^k \cdot x_1 = x_2$.\\
@@ -155,18 +155,18 @@ Since we can interpret elements of $Y^{X/\sim_g}$ as functions that map all elem
   Let $[x]$ denote the equivalence class of $x$ in $X/\sim_g$.\\
   Let $\varphi : (Y^X)^g \to Y^{X/\sim_g}$ be defined by $\varphi(f) = ([x] \mapsto f(x'))$, where $x'$ is some element of $[x]$.\\
   Let $\varphi^{-1} : Y^{X/\sim_g} \to (Y^X)^g$ be defined by $\varphi^{-1}(f) = (x \mapsto f([x]))$.\\
-  Then $\varphi$ and $\varphi^{-1}$ are well-defined and inverses of each other. Therefore we have a bijection between $(Y^X)^g$ and $Y^{X/\sim_g}$.
+  Then $\varphi$ and $\varphi^{-1}$ are well-defined and mutually inverse. Therefore we have a bijection between $(Y^X)^g$ and $Y^{X/\sim_g}$.
 \end{proposition}
 
 \begin{proof}
   \leanok
-  $\varphi$ is well-defined because by Proposition~\ref{prop:f-mem-fixedBy-iff-forall-eq-to-eq}: $f \in (Y^X)^g$ and $x_1 \sim_g x_2$ imply $f(x_1) = f(x_2)$.\\
+  $\varphi$ is well-defined because, by Proposition~\ref{prop:f-mem-fixedBy-iff-forall-eq-to-eq}, $f \in (Y^X)^g$ and $x_1 \sim_g x_2$ imply $f(x_1) = f(x_2)$.\\
   $\varphi^{-1}$ is well-defined because it maps to $(Y^X)^g$:
   \begin{equation*}
     \forall f \in Y^{X/\sim_g}, \forall x \in X: (g \cdot \varphi^{-1}(f))(x) = f([g^{-1} \cdot x]) = f([x]) = (\varphi^{-1}(f))(x).
   \end{equation*}
   $\varphi^{-1}(\varphi(f))(x) = f(x')$, where $x'$ is some representative of $[x]$. Therefore we have $x \sim_g x'$ and since $f \in (Y^X)^g$ by Proposition~\ref{prop:f-mem-fixedBy-iff-forall-eq-to-eq}: $f(x) = f(x')$.\\
-  $\varphi(\varphi^{-1}(f))([x]) = f([x'])$ where $x'$ is some representative of $[x]$. Therefore $[x] = [x']$ and then $f([x]) = f([x'])$.
+  $\varphi(\varphi^{-1}(f))([x]) = f([x'])$ where $x'$ is some representative of $[x]$. Since $[x] = [x']$, it follows that $f([x]) = f([x'])$.
 \end{proof}
 
 \begin{proposition}
@@ -217,7 +217,7 @@ We use \emph{Burnside's Lemma} to prove \emph{Pólya's enumeration theorem}. Sin
   Using Proposition~\ref{prop:forall-card-pow-numCyclesOfGroup-eq-card-fixedBy}, we substitute $|(Y^X)^g|$ with $|Y|^{c(g)}$.
 \end{proof}
 
-We also formalize a version of the theorem where the sum ranges over the possible numbers of cycles. We denote $[n] = \{0, \dots, n - 1\}$.
+We also formalize a version of the theorem where the sum ranges over the possible numbers of cycles. Let $[n] = \{0, \dots, n - 1\}$.
 
 \begin{theorem}
   \label{prop:numDistinctColorings-mul-card-group-eq-sum-numGroupOfNumCycles-mul-card-pow}
@@ -391,7 +391,7 @@ We define a function that sets a boolean array indexed by $[n]$ at indices that 
   \leanok
   We prove this by induction on $m$.\\
   If $m = 0$, then $\pi(x) = y$ is reached immediately and the function returns $v[x] = \top$.\\
-  Otherwise the function recursively calls itself with $v' := (v[x] = \top), x := \pi(x)$. Since $m$ satisfies $\pi^m(\pi(x)) = y$, the recursive call will result in an array that is set to $\top$ at all entires where $v'$ is set to $\top$ by inductive hypothesis. Thus the returned array is set to $\top$ at all entries where $v$ is set to $\top$.
+  Otherwise the function recursively calls itself with $v' := (v[x] = \top), x := \pi(x)$. Since $m$ satisfies $\pi^m(\pi(x)) = y$, the recursive call will result in an array that is set to $\top$ at all entries where $v'$ is set to $\top$ by inductive hypothesis. Thus the returned array is set to $\top$ at all entries where $v$ is set to $\top$.
 \end{proof}
 
 \begin{proposition}
@@ -413,7 +413,7 @@ We define a function that sets a boolean array indexed by $[n]$ at indices that 
 \begin{proof}
   \leanok
   This is proven by induction on $m$.\\
-  If $m = 0$ then $\pi(x) = y$ is reached immediately and the function returns $v[x] = \top$.\\
+  If $m = 0$, then $\pi(x) = y$ is reached immediately and the function returns $v[x] = \top$.\\
   Otherwise the function recursively calls itself with $v' := (v[x] = \top), x := \pi(x)$. Since $m$ is the smallest number satisfying $\pi^m(\pi(x)) = y$, the recursive call will result in an array that:
   \begin{itemize}
     \item is identical to the input array at all indices not in the same cycle as $\pi(x)$ (and therefore also at all indices not in the same cycle as $x$),
@@ -457,7 +457,7 @@ We define a function that computes the number of cycles of any permutation on $[
   \uses{def:visitCycle}
   %
   Let $n, i, c \in \mathbb{N}$, $\pi \in S_n$ and $v$ be some boolean array indexed by $[n]$.\\
-  The function \emph{computeNumCyclesOfPermAux} takes $\pi, v, c$ and a proof that $i \leq n$. It iterates over $j \in [i - 1, \dots, 0]$ and if $v[j] = \bot$ it increments $c$ by $1$ and sets $v$ to $\top$ at all indices that are in the same cycle as $j$ with the \emph{visitCycle} function. Then it returns updated $c$.\\
+  The function \emph{computeNumCyclesOfPermAux} takes $\pi, v, c$ and a proof that $i \leq n$. It iterates over $j \in [i - 1, \dots, 0]$ and if $v[j] = \bot$, it increments $c$ by $1$ and sets $v$ to $\top$ at all indices that are in the same cycle as $j$ with the \emph{visitCycle} function. Then it returns updated $c$.\\
   The function \emph{computeNumCyclesOfPerm} takes $\pi$ and returns its number of cycles. It uses \emph{computeNumCyclesOfPermAux} with $i = n, v = \text{constant }\bot\text{ array of length n}, c = 0$.
 \end{definition}
 
@@ -480,7 +480,7 @@ We define a function that computes the number of cycles of any permutation on $[
   Otherwise the function checks whether $v[i - 1] = \top$.
   \begin{itemize}
     \item If $v[i - 1] = \top$, then $i - 1$ must be in the same cycle as one of the elements in $\{i, \dots, n - 1\}$. So $v$ is already set to $\top$ at exactly those indices that are in the same cycle of $\pi$ as some element in $\{i - 1, \dots, n - 1\}$ and $c$ is already equal to the cardinality of some set of representatives of those cycles of $\pi$ that contain some element in $\{i - 1, \dots, n - 1\}$. Therefore we can use inductive hypothesis to conclude that the function returns the cardinality of some set of representatives of cycles of $\pi$.
-    \item If $v[i - 1] = \bot$, then $i - 1$ must be in some cycle whose elements do not appear in $\{i, \dots, n - 1\}$. The function increments $c$ by $1$ and sets $v$ at indices that are in the same cycle as $i - 1$ to $\top$. Now $v$ is set to $\top$ at exactly those indices that are in the same cycle of $\pi$ as some element in $\{i - 1, \dots, n - 1\}$ and $c$ is now equal to the cardinality of $S \cup \{i - 1\}$ which is the set or representatives of those cycles of $\pi$ that contain some element in $\{i - 1, \dots, n - 1\}$. We can therefore use the inductive hypothesis to conclude that the function returns the cardinality of some set of representatives of cycles of $\pi$.
+    \item If $v[i - 1] = \bot$, then $i - 1$ must be in some cycle whose elements do not appear in $\{i, \dots, n - 1\}$. The function increments $c$ by $1$ and sets $v$ at indices that are in the same cycle as $i - 1$ to $\top$. Now $v$ is set to $\top$ at exactly those indices that are in the same cycle of $\pi$ as some element in $\{i - 1, \dots, n - 1\}$ and $c$ is now equal to the cardinality of $S \cup \{i - 1\}$, which is the set of representatives of those cycles of $\pi$ that contain some element in $\{i - 1, \dots, n - 1\}$. We can therefore use the inductive hypothesis to conclude that the function returns the cardinality of some set of representatives of cycles of $\pi$.
   \end{itemize}
 \end{proof}
 
@@ -572,11 +572,11 @@ Renaming the elements of $X$ using a bijection $\phi : X \to [|X|]$ does not cha
     &= i \mapsto ((h \circ \phi^{-1})(g^{-1} \cdot i)) \\
     &= g \cdot (h \circ \phi^{-1}).
   \end{align*}
-  and similarly for any $f, h \in Y^{[|X|]}$ such that $f = g \cdot h$, we have:
+  and similarly, for any $f, h \in Y^{[|X|]}$ such that $f = g \cdot h$, we have:
   \begin{equation*}
     f \circ \phi = g \cdot (h \circ \phi).
   \end{equation*}
-  Since $\varphi$ and $\varphi^{-1}$ are mutual inverses, it follows that
+  Since $\varphi$ and $\varphi^{-1}$ are mutually inverse, it follows that
   \begin{equation*}
     |Y^X/G| = |Y^{[|X|]}/G|.
   \end{equation*}
@@ -585,7 +585,7 @@ Renaming the elements of $X$ using a bijection $\phi : X \to [|X|]$ does not cha
 We now define a function that computes the number of distinct colorings using \emph{Pólya's enumeration theorem} and prove its correctness.
 
 \begin{proposition}
-  \label{def:computeNumDistinctColorings}
+  \label{prop:computeNumDistinctColorings}
   %
   \leanok
   \lean{ComputationNumberOfDistinctColorings.computeNumDistinctColorings, ComputationNumberOfDistinctColorings.computeNumDistinctColorings_eq_numDistinctColorings}
@@ -646,7 +646,7 @@ The trivial group is a group that contains only a unit. Its group action is defi
 
 \subsection{Necklaces}
 
-For $n \geq 1$ we interpret the elements of the group $\mathbb{Z}_n$ as $n$ beads of a necklace, where $x \in \mathbb{Z}_n$ is connected with $x + 1$ and $x - 1$ (computed in $\mathbb{Z}_n$). Necklaces can be rotated, but not reflected. The elements of the group $\mathbb{Z}_n$ are also interpreted as rotations of the necklace, where $i \in \mathbb{Z}_n$ rotates the necklace by $\frac{2\pi i}{n}$. This defines a group action of $\mathbb{Z}_n$ on itself with $i \cdot x = i + x$ (computed in $\mathbb{Z}_n$).
+For $n \geq 1$ we interpret the elements of the group $\mathbb{Z}_n$ as $n$ beads of a necklace, where $x \in \mathbb{Z}_n$ is connected to $x + 1$ and $x - 1$ (computed in $\mathbb{Z}_n$). Necklaces can be rotated, but not reflected. The elements of the group $\mathbb{Z}_n$ are also interpreted as rotations of the necklace, where $i \in \mathbb{Z}_n$ rotates the necklace by $\frac{2\pi i}{n}$. This defines a group action of $\mathbb{Z}_n$ on itself with $i \cdot x = i + x$ (computed in $\mathbb{Z}_n$).
 
 \begin{definition}
   \label{def:numDistinctColoringsOfNecklace}
@@ -669,19 +669,19 @@ For $n \geq 1$ we interpret the elements of the group $\mathbb{Z}_n$ as $n$ bead
   \leanok
   \lean{Necklaces.computeNumDistinctColoringsOfNecklace, Necklaces.computeNumDistinctColoringsOfNecklace_eq_numDistinctColoringsOfNecklace}
   %
-  \uses{def:numDistinctColoringsOfNecklace, def:computeNumDistinctColorings}
+  \uses{def:numDistinctColoringsOfNecklace, prop:computeNumDistinctColorings}
   %
   The number of distinct colorings of a necklace can be computed using the \emph{computeNumDistinctColorings} function.
 \end{proposition}
 
 \begin{proof}
   \leanok
-  By Proposition~\ref{def:computeNumDistinctColorings}.
+  By Proposition~\ref{prop:computeNumDistinctColorings}.
 \end{proof}
 
 \subsection{Bracelets}
 
-For $n \geq 1$, we interpret the elements of the group $\mathbb{Z}_n$ as $n$ beads of a bracelet, where $x \in \mathbb{Z}_n$ is connected with $x + 1$ and $x - 1$ (computed in $\mathbb{Z}_n$). Bracelets can be rotated and reflected. The dihedral group $D_{2n}$ contains two types of elements:
+For $n \geq 1$, we interpret the elements of the group $\mathbb{Z}_n$ as $n$ beads of a bracelet, where $x \in \mathbb{Z}_n$ is connected to $x + 1$ and $x - 1$ (computed in $\mathbb{Z}_n$). Bracelets can be rotated and reflected. The dihedral group $D_{2n}$ contains two types of elements:
 \begin{itemize}
   \item $r_i$ for $i \in \mathbb{Z}_n$, interpreted as a rotation of the bracelet by $\frac{2\pi i}{n}$,
   \item $sr_i$ for $i \in \mathbb{Z}_n$, interpreted as a rotation of the bracelet by $\frac{2\pi i}{n}$ followed by a reflection.
@@ -723,14 +723,14 @@ This defines the following group action:
   \leanok
   \lean{Bracelets.computeNumDistinctColoringsOfBracelet, Bracelets.computeNumDistinctColoringsOfBracelet_eq_numDistinctColoringsOfBracelet}
   %
-  \uses{def:numDistinctColoringsOfBracelet, def:MulActionBracelet, def:computeNumDistinctColorings}
+  \uses{def:numDistinctColoringsOfBracelet, def:MulActionBracelet, prop:computeNumDistinctColorings}
   %
   The number of distinct colorings of a bracelet can be computed using the \emph{computeNumDistinctColorings} function.
 \end{proposition}
 
 \begin{proof}
   \leanok
-  By Proposition~\ref{def:computeNumDistinctColorings}.
+  By Proposition~\ref{prop:computeNumDistinctColorings}.
 \end{proof}
 
 \subsection{Cube}
@@ -878,14 +878,14 @@ We need to prove that $S$ is a subgroup of $S_6$. While this can be proven with 
   \leanok
   \lean{Cube.computeNumDistinctColoringsOfCube, Cube.computeNumDistinctColoringsOfCube_eq_numDistinctColoringsOfCube}
   %
-  \uses{def:numDistinctColoringsOfCube, prop:RotationalSymmetriesOfCubeSubgroup, def:computeNumDistinctColorings}
+  \uses{def:numDistinctColoringsOfCube, prop:RotationalSymmetriesOfCubeSubgroup, prop:computeNumDistinctColorings}
   %
   The number of distinct colorings of a cube can be computed using the \emph{computeNumDistinctColorings} function.
 \end{proposition}
 
 \begin{proof}
   \leanok
-  By Proposition~\ref{def:computeNumDistinctColorings}.
+  By Proposition~\ref{prop:computeNumDistinctColorings}.
 \end{proof}
 
 \subsection{Permutations}
@@ -949,7 +949,7 @@ We now prove that the number of distinct colorings of $n$ unordered, indistingui
   \leanok
   \lean{ContractExpand.perm_perm_val_lt_of_perm_val_eq}
   %
-  Let $\pi \in S_n$ such that $\pi(i) = n$ for some $i < n$. Then $\pi(\pi(i)) < n$.
+  Let $\pi \in S_n$ be such that $\pi(i) = n$ for some $i < n$. Then $\pi(\pi(i)) < n$.
 \end{proposition}
 
 \begin{proof}
@@ -971,7 +971,7 @@ We now prove that the number of distinct colorings of $n$ unordered, indistingui
   %
   We define functions that contract and expand permutations:
   \begin{itemize}
-    \item \emph{permContract}: Contracts $\pi \in S_{n + 1}$ by removing $n$ from the domain and remapping $\pi^{-1}(n) \mapsto \pi(n)$, if $\pi^{-1}(n) \neq n$. The result is a permutation in $S_n$, whose inverse can be constructed by using the same procedure on $\pi^{-1}$.
+    \item \emph{permContract}: Contracts $\pi \in S_{n + 1}$ by removing $n$ from the domain and remapping $\pi^{-1}(n) \mapsto \pi(n)$, if $\pi^{-1}(n) \neq n$. The result is a permutation in $S_n$ whose inverse can be constructed by using the same procedure on $\pi^{-1}$.
 
     \item \emph{permExpand}: Expands a permutation $\pi \in S_n$ by adding $n$ to the domain and defining $\pi(n) = n$. The result is a permutation in $S_{n + 1}$, whose inverse can be constructed by using the same procedure on $\pi^{-1}$.
   \end{itemize}
